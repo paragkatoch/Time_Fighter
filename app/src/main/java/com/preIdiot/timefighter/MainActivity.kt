@@ -3,6 +3,7 @@ package com.preIdiot.timefighter
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.animation.AnimationUtils
@@ -14,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 
 
 class MainActivity : AppCompatActivity() {
+    var saveValues = longArrayOf(0,0)
     val current = this
     var score = 0
     var gameStarted = false
@@ -41,9 +43,10 @@ class MainActivity : AppCompatActivity() {
         timeTextView = findViewById(R.id.Time)
 
         if (savedInstanceState != null) {
-            score = savedInstanceState.getInt(SCORE_KEY)
-            timeLeftOnTimer = savedInstanceState.getLong(TIME_LEFT_KEY)
-            resetGame(score,timeLeftOnTimer-1000)
+            saveValues[0] = savedInstanceState.getLong(SCORE_KEY)
+            saveValues[1] = savedInstanceState.getLong(TIME_LEFT_KEY)
+            Log.i("MainActivity", "onCreate Called $score $timeLeftOnTimer")
+            //resetGame(score,timeLeftOnTimer-1000)
         } else {
             resetGame()
         }
@@ -58,12 +61,27 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
-        outState.putInt(SCORE_KEY,score)
+        Log.i("MainActivity", "onSavedInstanceState Called")
+        outState.putLong(SCORE_KEY,score.toLong())
         outState.putLong(TIME_LEFT_KEY,timeLeftOnTimer)
 
-        countDownTimer.cancel()
+       // countDownTimer.cancel()
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.i("MainActivity", "onStart Called ${saveValues[0]} ${saveValues[1]}")
+        if(saveValues[1] != 0L)
+        resetGame(saveValues[0].toInt(),saveValues[1])
+    }
+
+    override fun onStop() {
+        super.onStop()
+        saveValues[0] = score.toLong()
+        saveValues[1] = timeLeftOnTimer
+        Log.i("MainActivity", "onStop Called ${saveValues[0]} ${saveValues[1]}")
+        countDownTimer.cancel()
     }
 
     private fun resetGame(gameScore:Int = 0,time: Long = initialCountDown) {
