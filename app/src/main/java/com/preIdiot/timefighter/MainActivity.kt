@@ -78,10 +78,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        saveValues[0] = score.toLong()
-        saveValues[1] = timeLeftOnTimer
-        Log.i("MainActivity", "onStop Called ${saveValues[0]} ${saveValues[1]}")
-        countDownTimer.cancel()
+        if(gameStarted) {
+            saveValues[0] = score.toLong()
+            saveValues[1] = timeLeftOnTimer
+            Log.i("MainActivity", "onStop Called ${saveValues[0]} ${saveValues[1]}")
+            countDownTimer.cancel()
+        }
     }
 
     private fun resetGame(gameScore:Int = 0,time: Long = initialCountDown) {
@@ -131,6 +133,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun endGame() {
         Toast.makeText(current,getString(R.string.gameEndMessage, score), Toast.LENGTH_LONG).show()
+        timeLeftOnTimer = 0
         resetGame()
     }
 
